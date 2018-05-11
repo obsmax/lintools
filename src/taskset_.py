@@ -18,21 +18,19 @@ home = home_path()
 username = whoami()
 
 
-if len(sys.argv) <= 1 or not sys.argv[1] == "-pc": 
-    print 'usage : taskset_ -pc 0-10 "command indications"'
+if len(sys.argv) < 3: 
+    print 'usage : taskset_ 0-10 "command indications"'
     print 'see also, ps_, kill_, renice_'
     sys.exit()
-tasksetcommand = " ".join(sys.argv[1:-1])
-processes      = sys.argv[2]
-command        = " ".join(sys.argv[3:]) #part of the command line refering to a process to run taskset on
+    
+tasksetcommand = " -pca " + str(sys.argv[1])
+command        = " ".join(sys.argv[2:]) #part of the command line refering to a process to run taskset on
 
-
-
-cmd = """ps -ef | awk '$1 == "%s" || $1 == "maximil+" {print substr($0, 0, 150)}' | grep "%s" | grep -v "grep"  | grep -v "taskset" > %s/.taskset.out.tmp""" % (home, command, username)
+cmd = """ps -ef | awk '$1 == "%s" || $1 == "maximil+" {print substr($0, 0, 150)}' | grep "%s" | grep -v "grep"  | grep -v "taskset" > %s/.taskset.out.tmp""" % (username, command, home)
 print cmd
 os.system(cmd)
 
-with open('%s/.taskset.out.tmp' % home) as fid:
+with open('%s/.taskset.out.tmp' % home, 'r') as fid:
     ls, pids, ppids = [], [], []
     for l in fid.readlines():
         l = l.split('\n')[0]
