@@ -1,0 +1,7 @@
+.idea
+.idea/*
+*._*
+.ipynb_checkpoints
+*.pyc
+*.png
+.DS_Store
