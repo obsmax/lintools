@@ -50,7 +50,7 @@ for extension in extensions:
     out, err = execbash(cmd)
     sz = out.split()[0]
     sizes.append(sz)
-    isz = eval(sz.replace('K', '*1e3').replace('M', '*1e6').replace('G', '*1e9').replace(',', '.'))
+    isz = eval(sz.replace('B','').replace('K', '*1e3').replace('M', '*1e6').replace('G', '*1e9').replace(',', '.'))
     isizes.append(isz)
 
 I = np.argsort(isizes)
