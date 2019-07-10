@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import glob, os, sys
 import numpy as np
 
@@ -12,24 +13,24 @@ def lll(d, level = 0, maxdepth = 1e4, directories = True, files = False):
             if d != ".": s = "|  " * level + dd.split(d)[-1].split('/')[-1]
             else:        s = "|  " * level + dd.split('/')[-1]
 
-            print s + "/"
+            print( s + "/")
             lll(dd, level = level + 1, maxdepth = maxdepth - 1, directories = directories, files = files)
         elif files:
             if d != ".": s = "|  " * level + dd.split(d)[-1].split('/')[-1]
             else:        s = "|  " * level + dd.split('/')[-1]
-            print s
+            print( s)
 
 
 # -------------------------------------------
 if __name__ == "__main__":
     if "-h" in sys.argv or "--help" in sys.argv:
-        print """
+        print("""
             -%d  recursion depth (default -3)
             -h   (--help) help message
             -d   do not list directories (default False)
             -f   list files (default False)
-        """
-        sys.exit()
+        """)
+        sys.exit(1)
 
     # -------------------------------------------
     maxdepth = 2

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-monitor script activity every .2s
+monitor script activity every 1s
 if a script is found in ps -ef
 I print the corresponding pstree -Aap 
 """
@@ -11,7 +11,7 @@ import os, sys
 
 cmd = """
 while true; 
-    do sleep .1
+    do sleep 1
     pid=`ps -ef | grep "%s" | grep -v grep | grep -v "%s" | awk '{print $3}' | head -n 1`
 
     if [ -z $pid ];

@@ -1,4 +1,6 @@
 #!/usr/bin/python2.7
+from __future__ import print_function
+from lintools.linuxcmds import execbash, get_device
 import os, sys, time
 import subprocess
 
@@ -14,7 +16,7 @@ please enter any directory that is inside the partition to monitor
 """
 plot = False
 if len(sys.argv) == 1 or "--help" in sys.argv[1:] or "-h" in sys.argv[1:]:
-    print hlp
+    print(hlp)
     sys.exit()
 
 if "--plot" in sys.argv[1:] or "-p"  in sys.argv[1:]:
@@ -35,8 +37,11 @@ for arg in sys.argv[1:]:
 
 
 # ----------------------------
-device = subprocess.Popen("df -hT %s" % directory, stdout = subprocess.PIPE, shell = True).communicate()[0].split('\n')[1].split()[0]
-print '>> directory "%s" is on device "%s"' % (os.path.realpath(directory), device)
+#device = subprocess.Popen("df -hT %s" % directory, stdout = subprocess.PIPE, shell = True).communicate()[0].split('\n')[1].split()[0]
+#def get_device(dirname):
+    #return execbash('df -hT {}'.format(directory), shell=True)[0].split('\n')[1].split()[0]
+device = get_device(directory)
+print('>> directory "%s" is on device "%s"' % (os.path.realpath(directory), device))
 
 
 # ----------------------------
@@ -44,16 +49,22 @@ Nbar = 30
 scale = 200.
 cmd = "/usr/bin/iostat %s" % (device)
 refresh = 2.0 #not too low, may slow ios down
-print cmd
+print(cmd)
 T, KR, KW = None, None, None
 while True:
-    l = subprocess.Popen(cmd, stdout = subprocess.PIPE, shell = True).communicate()[0].split('\n')
+    #l = subprocess.Popen(cmd, stdout = subprocess.PIPE, shell = True).communicate()[0].split('\n')
+    #print(cmd)
+    l = execbash(cmd, shell=True)[0].split('\n')
+    #print(l)
+    #raise
     t  = time.time()
     tt = time.asctime().split()[3]
     while len(l):
         ll = l.pop(0)
-        if not len(ll): continue
-        if ll.split()[0] == "Device:": break
+        if not len(ll): 
+            continue
+        if ll.startswith("Device"):
+            break
     l = l.pop(0)
     kr = float(l.split()[4])
     kw = float(l.split()[5])

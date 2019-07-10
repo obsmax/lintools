@@ -1,22 +1,12 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from lintools.linuxcmds import home, whoami
 import glob, os, sys
 from subprocess import Popen, PIPE
 
-def whoami():
-    script = "whoami"
-    p = Popen(script, stdout=PIPE, shell = True)#, stderr = stderrfid)
-    stdout, stderr = p.communicate()
-    user = stdout.strip().strip('\n').strip()
-    return user
-def home_path():
-    script = "cd ~; pwd"
-    p = Popen(script, stdout=PIPE, shell = True)#, stderr = stderrfid)
-    stdout, stderr = p.communicate()
-    h = stdout.strip().strip('\n').strip()
-    return h
-home = home_path()
+HOME = home()
 
-###########################################
+
 def countfiles(paths):
     N = 0
     NN = 0
@@ -26,30 +16,29 @@ def countfiles(paths):
             continue
         cmd = 'find -L %s -type f | wc -l > ~/.countf.log' % d
         os.system(cmd)
-        print d,
-        with open('{}/.countf.log'.format(home), 'r') as fid:
+        print(d, end=" ")
+        with open('{}/.countf.log'.format(HOME), 'r') as fid:
             n = int(fid.readline().split('\n')[0])
-            print n
+            print(n)
             N += n
-    print "single files", NN
+    print("single files", NN)
     N += NN
-    print "Total %d files found" % N
+    print("Total %d files found" % N)
     return N
 
 
-###########################################
 def countdirs(paths):
     N = 0
     for d in paths:
         if not os.path.isdir(d): continue
         cmd = 'find -L %s -type d | wc -l > ~/.countd.log' % d
         os.system(cmd)
-        print d,
-        with open('{}/.countd.log'.format(home), 'r') as fid:
+        print(d, end=" ")
+        with open('{}/.countd.log'.format(HOME), 'r') as fid:
             n = int(fid.readline().split('\n')[0])
-            print n
+            print(n)
             N += n
-    print "Total %d directories found" % N
+    print("Total %d directories found" % N)
     return N
 
 
