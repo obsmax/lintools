@@ -11,6 +11,7 @@ bin/sigint
 bin/sigkill
 bin/sigterm
 bin/sizbytyp
+bin/taskset.py
 lintools.egg-info/PKG-INFO
 lintools.egg-info/SOURCES.txt
 lintools.egg-info/dependency_links.txt

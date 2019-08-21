@@ -15,5 +15,6 @@ setup(name='lintools',
                'bin/sigint',
                'bin/sigkill',
                'bin/sigterm',
-               'bin/sizbytyp'])
+               'bin/sizbytyp',
+               'bin/taskset.py'])
 

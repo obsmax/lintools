@@ -54,7 +54,7 @@ def clearterm():
 
    
 def find_processes(command_search, username, currentpid, currentppid):
-    script = """ps -ef | awk '$1 == "{}"' | grep '{}' | grep -v 'ps -ef' | grep -v 'grep' """.format(username , command_search)
+    script = """ps -efT | awk '$1 == "{}"' | grep '{}' | grep -v 'ps -ef' | grep -v 'grep' """.format(username , command_search)
     stdout, stderr = execbash(script, shell=True)
     h = stdout.strip().strip('\n').strip()
 
@@ -90,6 +90,36 @@ def sigkill(option, command_to_kill):
     print(execcmd)
     if pyinput('run?') == "y":
         execbash(execcmd, shell=True)
+        
+
+def taskset(affinity, command_search):
+    assert "-" in affinity
+    try: 
+        threadmin, threadmax = affinity.split('-')
+        threadmin = int(threadmin)
+        threadmax = int(threadmax)
+    except Exception as e:
+        e.args = ('affinity option not understood ({}), was expecting smth like 0-10'.format(affinity))
+        raise e
+        
+    currentpid = os.getpid()
+    currentppid = os.getppid()
+    homepath = home()
+    username = whoami()
+
+    execcmd = []
+    for pid, ppid, cmd in find_processes(
+        command_search, username, currentpid, currentppid):
+        execcmd.append("taskset -pc {:<7s} {:<10d} #  {}".format(affinity, pid, cmd[:80]))
+
+    execcmd = "\n".join(execcmd).strip()
+    if not len(execcmd):
+        print('no matching process')
+        sys.exit(1)
+    print(execcmd)
+    if pyinput('run?') == "y":
+        execbash(execcmd, shell=True)
+
 
 def rglob(dirname):
     """list files recursively with absolute path
