@@ -16,5 +16,6 @@ setup(name='lintools',
                'bin/sigkill',
                'bin/sigterm',
                'bin/sizbytyp',
-               'bin/taskset.py'])
+               'bin/taskset.py',
+               'bin/mkmov'])
 

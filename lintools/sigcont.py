@@ -2,7 +2,7 @@
 import sys, os
 from lintools.linuxcmds import sigkill
 
-option = "SIGINT"
+option = "SIGCONT"
 help_message = """
 usage :
 {} "command keywords"

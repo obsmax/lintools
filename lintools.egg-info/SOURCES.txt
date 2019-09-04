@@ -4,6 +4,7 @@ bin/count
 bin/dusch
 bin/iostatbar
 bin/lll
+bin/mkmov
 bin/msa
 bin/psg
 bin/rdu
