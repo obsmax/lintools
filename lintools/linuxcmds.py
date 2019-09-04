@@ -72,7 +72,7 @@ def find_processes(command_search, username, currentpid, currentppid):
 
 
 def sigkill(option, command_to_kill):
-    assert option.upper() in ['SIGKILL', 'SIGINT', 'SIGTERM']
+    assert option.upper() in ['SIGKILL', 'SIGINT', 'SIGTERM', 'SIGSTOP', 'SIGCONT']
     currentpid = os.getpid()
     currentppid = os.getppid()
     homepath = home()
