@@ -10,7 +10,8 @@ help_message = """
 create a movie from a collection of png files
 usage:
     options
-        --dry-run    = prints the shell script only
+        --dry-run              = prints the shell script only
+        --thumbnail="filename" = name of the figure to place first for thumbnail
     arguments
         list of png files or paths to pngfiles (use quotes and wildcards)
 """
@@ -23,7 +24,7 @@ mkdir --parents {dirtemp}'''
 link_script = "\nln -sf {pngfile} {dirtemp}/_image_{i:04d}.png"
          
 ffmpeg_script = '''        
-ffmpeg -r 24 -f image2 \\
+ffmpeg -r {rate} -f image2 \\
     -i {dirtemp}/_image_%04d.png \\
     -vcodec libx264 \\
     -crf 25  \\
@@ -38,8 +39,7 @@ trash {dirtemp}
 
 if __name__ == "__main__":
 
-    # ============ defaults
-    dry_run = False
+    
     if os.path.isfile('mov.mp4'):
         ans = input('mov.mp4 exists, overwrite?') 
         if ans == "y":
@@ -47,6 +47,11 @@ if __name__ == "__main__":
         else:
             sys.exit(1)
 
+    # ============ defaults
+    dry_run = False    
+    thumbnail = None
+    rate = 24 # 24   # Hz
+    
     # ============ input
     ls = sys.argv[1:]
     if not len(ls):
@@ -59,35 +64,49 @@ if __name__ == "__main__":
     script = mkdir_script.format(dirtemp=dirtemp)
     filename = "./mov.mp4".format(dirtemp=dirtemp)
     
-    # arguments
-    i = 0
+    # separate options from files
     options = []
+    remain = []
     for pathorfileoroption in ls:
         if pathorfileoroption.startswith('-'):
             # option
             options.append(pathorfileoroption)
-        else:   
-            # pathorfile
-            for pngfile in glob.iglob(pathorfileoroption):   
+        else:
+            for pngfile in glob.iglob(pathorfileoroption): 
                 if not pngfile.endswith('.png') or pngfile.endswith('.PNG'):
                     raise ValueError('unexpected file type {}'.format(pngfile))
-                    
-                script += link_script.format(
-                    pngfile=os.path.abspath(pngfile),  # need absolute path, not relative
-                    dirtemp=dirtemp,
-                    i=i)
-                i += 1
-
-
-    script += ffmpeg_script.format(dirtemp=dirtemp)
-    script += close_script.format(dirtemp=dirtemp)
+                remain.append(pngfile)
     
     # check options
     for option in options:
         if option == "--dry-run":
             dry_run = True
+        elif option.startswith('--thumbnail'):
+            assert option.startswith('--thumbnail=')
+            thumbnail = option.split('=')[-1]
+            assert os.path.isfile(thumbnail)
+            assert thumbnail.split('.')[-1].lower() in ['jpg', 'png']
         else:
-            raise ValueError('unknown option {}'.format(option))
+            raise ValueError('unknown option >{}<'.format(option))
+            
+    i = 0  
+    if thumbnail is not None:
+        script += link_script.format(
+            pngfile=os.path.abspath(thumbnail),  # need absolute path, not relative
+            dirtemp=dirtemp,
+            i=i)
+        i += 1
+                  
+    for pngfile in remain:   
+           
+        script += link_script.format(
+            pngfile=os.path.abspath(pngfile),  # need absolute path, not relative
+            dirtemp=dirtemp,
+            i=i)
+        i += 1
+
+    script += ffmpeg_script.format(rate=rate, dirtemp=dirtemp)
+    script += close_script.format(dirtemp=dirtemp)
             
     # ============ print on screen
     print(script)
@@ -110,7 +129,7 @@ if __name__ == "__main__":
         finally:
             if os.path.isdir(dirtemp):
                 # force clean up
-                script = "trash {dirtemp}".format(script)
+                script = "trash {dirtemp}".format(dirtemp=dirtemp)
                 print(script)
                 os.system(script)
                         

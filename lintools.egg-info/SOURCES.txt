@@ -8,8 +8,10 @@ bin/mkmov
 bin/msa
 bin/psg
 bin/rdu
+bin/sigcont
 bin/sigint
 bin/sigkill
+bin/sigstop
 bin/sigterm
 bin/sizbytyp
 bin/taskset.py
