@@ -6,6 +6,7 @@ bin/iostatbar
 bin/lll
 bin/mkmov
 bin/msa
+bin/pdfreduce
 bin/psg
 bin/rdu
 bin/sigcont

@@ -19,5 +19,6 @@ setup(name='lintools',
                'bin/sigterm',
                'bin/sizbytyp',
                'bin/taskset.py',
+               'bin/pdfreduce',
                'bin/mkmov'])
 
