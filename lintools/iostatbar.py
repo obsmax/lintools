@@ -66,8 +66,9 @@ while True:
         if ll.startswith("Device"):
             break
     l = l.pop(0).replace(',', '.')
-    kr = float(l.split()[4])
-    kw = float(l.split()[5])
+    kr = float(l.split()[5])
+    kw = float(l.split()[6])
+
     if T is not None: 
         rspeed = round((kr - KR) / (t - T))
         wspeed = round((kw - KW) / (t - T))
