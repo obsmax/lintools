@@ -1,0 +1,2 @@
+numpy
+trash-cli
