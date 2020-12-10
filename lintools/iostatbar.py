@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 from __future__ import print_function
 from lintools.linuxcmds import execbash, get_device
-import os, sys, time
+import os, sys, time, math
 import subprocess
 
 if not os.path.exists('/usr/bin/iostat'):
@@ -46,10 +46,15 @@ print('>> directory "%s" is on device "%s"' % (os.path.realpath(directory), devi
 
 # ----------------------------
 Nbar = 30
-scale = 200.
+scale = 1.
 cmd = "/usr/bin/iostat %s" % (device)
 refresh = 2.0 #not too low, may slow ios down
 print(cmd)
+
+
+def scale_fun(speed_in_kB):
+    return int(round(Nbar * (1. - math.exp(-speed_in_kB / 80000.))))
+        
 T, KR, KW = None, None, None
 while True:
     #l = subprocess.Popen(cmd, stdout = subprocess.PIPE, shell = True).communicate()[0].split('\n')
@@ -69,26 +74,31 @@ while True:
     kr = float(l.split()[5])
     kw = float(l.split()[6])
 
+
+        
     if T is not None: 
         rspeed = round((kr - KR) / (t - T))
         wspeed = round((kw - KW) / (t - T))
-        rbars = int(rspeed / scale)
-        wbars = int(wspeed / scale)
+        rbars = scale_fun(rspeed)  #int(rspeed / scale)
+        wbars = scale_fun(wspeed)  #int(wspeed / scale)
+        """
         if rbars > Nbar or wbars > Nbar:
-            scale *= 2
+            scale *= 1
             rbars = int(rspeed / scale)
             wbars = int(wspeed / scale)
         if (rspeed or wspeed) and (rbars == 0 and wbars == 0):
-            scale /= 2
+            scale /= 1
             rbars = int(rspeed / scale)
             wbars = int(wspeed / scale)
+        """
         rbars = min([rbars, Nbar])
         wbars = min([wbars, Nbar])
         rbars = ("|" * rbars + " " * (Nbar - rbars))# + " " * (30 - rbars))
         wbars = ("|" * wbars + " " * (Nbar - wbars))# + " " * (30 - rbars))
 
         #print "%s %s read %8.0f kB/s write %8.0f kB/s" % (device, tt, round((kr - KR) / (t - T)), round((kw - KW) / (t - T)))
-        L = "%s %s r[%s %8.0fkB/s]    w[%s %8.0fkB/s]  x%.0f" % (device, tt, rbars, rspeed, wbars, wspeed, scale)
+        #L = "%s %s r[%s %8.0fkB/s]    w[%s %8.0fkB/s]  x%.0f" % (device, tt, rbars, rspeed, wbars, wspeed, scale)
+        L = "%s %s r[%s %8.0fkB/s]    w[%s %8.0fkB/s]" % (device, tt, rbars, rspeed, wbars, wspeed)
 
         sys.stdout.write(L + "\n")
         sys.stdout.flush()
