@@ -70,11 +70,22 @@ while True:
             continue
         if ll.startswith("Device"):
             break
+    if "kB_read" not in ll:
+        raise Exception
+
+    if "kB_wrtn" not in ll:
+        raise Exception
+
+    idx_read = ll.split().index('kB_read')  # may vary from system to system
+    idx_write = ll.split().index('kB_wrtn')
+
     l = l.pop(0).replace(',', '.')
-    kr = float(l.split()[5])
-    kw = float(l.split()[6])
-
-
+    try:
+        kr = float(l.split()[idx_read])
+        kw = float(l.split()[idx_write])
+    except IndexError as e:
+        e.args = (f'could not interpret line "{l}" ' + str(e), )
+        raise e 
         
     if T is not None: 
         rspeed = round((kr - KR) / (t - T))
