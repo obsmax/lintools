@@ -28,6 +28,19 @@ if "--plot" in sys.argv[1:] or "-p"  in sys.argv[1:]:
     fig.show()
 
 
+def speedfmt(speed, fmt="%4.0f"):
+    if speed < 1024:
+        return (fmt + "kB/s") % speed
+
+    elif speed < (1024 ** 2):
+        return (fmt + "MB/s") % (speed // 1024)
+
+    else:
+        return (fmt + "GB/s") % (speed // (1024 * 1024))
+
+
+
+
 # ----------------------------
 directory = ""
 for arg in sys.argv[1:]:
@@ -52,8 +65,10 @@ refresh = 2.0 #not too low, may slow ios down
 print(cmd)
 
 
+max_speed_in_kB_per_s = 1024 * 1024 # 1GB/s
 def scale_fun(speed_in_kB):
-    return int(round(Nbar * (1. - math.exp(-speed_in_kB / 80000.))))
+    norm_speed_in_kB = (speed_in_kB) / float(max_speed_in_kB_per_s)
+    return int(round(Nbar * (1. - math.exp(-4 * norm_speed_in_kB))))
         
 T, KR, KW = None, None, None
 while True:
@@ -109,7 +124,7 @@ while True:
 
         #print "%s %s read %8.0f kB/s write %8.0f kB/s" % (device, tt, round((kr - KR) / (t - T)), round((kw - KW) / (t - T)))
         #L = "%s %s r[%s %8.0fkB/s]    w[%s %8.0fkB/s]  x%.0f" % (device, tt, rbars, rspeed, wbars, wspeed, scale)
-        L = "%s %s r[%s %8.0fkB/s]    w[%s %8.0fkB/s]" % (device, tt, rbars, rspeed, wbars, wspeed)
+        L = "%s %s r[%s]%s    w[%s]%s" % (device, tt, rbars, speedfmt(rspeed), wbars, speedfmt(wspeed))
 
         sys.stdout.write(L + "\n")
         sys.stdout.flush()
